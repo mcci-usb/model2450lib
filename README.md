@@ -1,4 +1,4 @@
-# cricketlib
+# model2450lib
 
 This is a Python library to control MCCI Model2450.
 
