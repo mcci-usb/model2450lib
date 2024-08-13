@@ -42,7 +42,7 @@ python setup.py install
 ```
 
 Please navigate to dist/ directory and you will find the files .egg file.
-Example: `cricketapi-1.0.0-py3.7.egg`
+Example: `model2450lib-1.0.0-py3.7.egg`
 
 ## How to use the package
 
