@@ -64,7 +64,6 @@ sw1 = model2450.Model2450('COM3')
 ### Connect the USB Model
 
 sw1.connect()
-print("Connected model 2450:")
 
 ### cmd for Read color
 
