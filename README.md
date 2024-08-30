@@ -59,6 +59,9 @@ dev_list = searchmodel.get_models()
 
 ### Open comport
 
+```
+Replace 'COM3' with the appropriate COM port for Model2450
+```
 sw1 = model2450.Model2450('COM3')
 
 ### Connect the USB Model
