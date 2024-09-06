@@ -31,7 +31,6 @@ def get_models():
 
 def get_avail_ports():
     comlist = serial.tools.list_ports.comports()
-    print("comlist:", comlist)
     port_name = []
     for port, desc, hwid in sorted(comlist):
         port_name.append((hwid, port, desc))
@@ -50,31 +49,58 @@ def filter_port():
 
 def check_status(myport):
     try:
+        # Attempt to open the serial port
         ser = serial.Serial(myport, baudrate=115200, 
                             bytesize=serial.EIGHTBITS,
                             parity=serial.PARITY_NONE, timeout=1, 
                             stopbits=serial.STOPBITS_ONE)
         time.sleep(1)
 
-        status_cmd = 'status\r\n'
+        # Send command to check version
+        version_cmd = 'version\r\n'
+        ser.write(version_cmd.encode())
 
-        ser.write(status_cmd.encode())
-        strout = ser.readline().decode('utf-8')
+        # Read the initial response for the version
+        response = ser.readline().decode('utf-8')
         
-        # Waiting for the complete response
+        # Wait for the complete response
         start_time = time.time()
         while (time.time() - start_time) < 2:
             line = ser.readline().decode('utf-8')
-            strout += line
+            response += line
+
+        # Check if version is '3:1'
+        if '3:1' in response:
+            ser.close()
+            return '2450'
+
+        # Send command to check status
+        status_cmd = 'status\r\n'
+        ser.write(status_cmd.encode())
+
+        # Read the initial response for the status
+        response = ser.readline().decode('utf-8')
+        
+        # Wait for the complete response
+        start_time = time.time()
+        while (time.time() - start_time) < 2:
+            line = ser.readline().decode('utf-8')
+            response += line
 
         ser.close()
-        
-        if 'Brightness And Color Kit' in strout:
+
+        # Check if status contains 'Brightness And Color Kit'
+        if 'Brightness And Color Kit' in response:
             return '2450'
-        else:
-            return None
+        
+        return None
 
     except serial.SerialException as e:
+        print(f"Serial communication error: {e}")
+        return None
+
+    except Exception as e:
+        print(f"Unexpected error: {e}")
         return None
 
 def search_models():

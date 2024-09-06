@@ -51,6 +51,14 @@ class Model2450(model.Model):
         rc, rstr = self.send_cmd(cmd)
         # print("level->", rstr)
         return rstr
+    
+    def set_level(self, value):
+        cmd = self.set_level_cmd(value)
+        return self.send_cmd(cmd)
+    
+    def set_level_cmd(self, value):
+        return 'level '+str(value)+'\r\n'
+    
   
     def get_color(self):
         cmd = 'color\r\n'
@@ -72,6 +80,9 @@ class Model2450(model.Model):
         cmd = 'set green\r\n'
         rc, rstr = self.send_cmd(cmd)
         return rstr
+    
+    # def set_th_light(self):
+    #     cmd = "level"
 
     def set_run(self):
         cmd = 'run\r\n'
