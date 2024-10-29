@@ -18,7 +18,7 @@ from setuptools import setup
 
 setup(
     name='model2450lib',
-    version='1.0.0',
+    version='1.0.1',
     description='API for MCCI Model2450',
     author='Vinay N MCCI Corporation',
     author_email='',

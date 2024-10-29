@@ -51,6 +51,7 @@ Create a Python file and import the class library from package:
 ```python
 from model2450lib import searchmodel
 from model2450lib import model2450
+import time
 ```
 
 ### Listed out the Model2450
@@ -90,4 +91,5 @@ sw1.get_version()
 
 ## Release History
 
+- v1.0.1 update examples
 - v1.0.0 initial release
