@@ -1,6 +1,6 @@
 # model2450lib
 
-This is a Python library to control MCCI Model2450.
+This is a Python library to control MCCI Model2450 Brightness And Color Kit.
 
 ## Install Python3.7 (64-bit) package
 
@@ -49,30 +49,32 @@ Example: `model2450lib-1.0.0-py3.7.egg`
 Create a Python file and import the class library from package:
 
 ```python
-from model2450lib import searchswitch
-from model2450lib import switch2450
+from model2450lib import searchmodel
+from model2450lib import model2450
 ```
 
 ### Listed out the Model2450
 
-dev_list = searchswitch.get_switches()
+dev_list = searchmodel.get_models()
 
 ### Open comport
 
-sw1 = switch2450.Switch2450('COM3')
+```
+Replace 'COM3' with the appropriate COM port for Model2450
+```
+sw1 = model2450.Model2450('COM3')
 
-### Connect the USB Switch
+### Connect the USB Model
 
 sw1.connect()
-print("Connected switch 2450:")
 
 ### cmd for Read color
 
-sw1.color_read()
+sw1.get_color()
 
 ### cmd for Read level
 
-sw1.level_read()
+sw1.get_level()
 
 ### cmd Read
 
@@ -86,17 +88,6 @@ sw1.read_sn()
 
 sw1.get_version()
 
-
-
-
-
-
 ## Release History
+
 - v1.0.0 initial release
-
-
-
-
-
-
-

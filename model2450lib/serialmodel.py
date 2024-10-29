@@ -1,9 +1,9 @@
 ##############################################################################
 # 
-# Module: serialswitch.py
+# Module: serialmodel.py
 #
 # Description:
-#     serialswitch is shows serial port devices
+#     serialmodel is shows serial port devices
 #
 #     Released under the MCCI Corporation.
 #
@@ -19,7 +19,6 @@ import serial.tools.list_ports
 
 class SerialDev:
     def __init__(self, port, baud):
-        print("Serial Constructor")
         self.handler = None
         self.port = port
         self.baud = baud
@@ -58,6 +57,25 @@ class SerialDev:
             return  0, self.handler.readline().decode('utf-8')
         except:
             return -1
+    
+    # def read_line(self):
+    #     try:
+    #         return self.handler.readline().decode('utf-8').strip()
+    #     except:
+    #         return ""
+    
+    def read_multiple_lines(self):
+        lines = []
+        try:
+            while True:
+                line = self.handler.readline().decode('utf-8').strip()
+                if line:
+                    lines.append(line)
+                else:
+                    break  # Exit loop when no more data is received
+        except Exception as e:
+            print(f"Error reading multiple lines: {e}")
+        return lines
     
 
     def readcolor(self):

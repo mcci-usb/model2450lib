@@ -1,9 +1,9 @@
 ##############################################################################
 # 
-# Module: switch2450.py
+# Module: model2450.py
 #
 # Description:
-#     Top level API to manage USB Switch 2450
+#     Top level API to manage Model 2450
 #
 #     Released under the MCCI Corporation.
 #
@@ -14,12 +14,11 @@
 #    V1.0.0 Wed Aug 2024 12:05:00   Vinay N
 #       Module created
 ##############################################################################
-from model2450lib import switch
+from model2450lib import model
 
-
-class Switch2450(switch.Switch):
+class Model2450(model.Model):
     def __init__(self, cport):
-        switch.Switch.__init__(self, cport, 115200)
+        model.Model.__init__(self, cport, 115200)
     
     def read_sn(self):
         cmd = 'sn\r\n'
@@ -27,12 +26,17 @@ class Switch2450(switch.Switch):
         # print(rc,rstr)
         return (rstr)
     
-    def get_version_rd(self):
+    def get_version(self):
         cmd = 'version\r\n'
         rc, rstr =  self.send_cmd(cmd)
         # print("rstr-version:", rstr)
         return (rc, rstr)
     
+    def do_reset(self):
+        cmd = 'reset\r\n'
+        rc, rstr =  self.send_cmd(cmd)
+        # print("rstr-version:", rstr)
+        return (rc, rstr)
 
     
     def get_read(self):
@@ -42,23 +46,25 @@ class Switch2450(switch.Switch):
         return (rstr)
 
     
-    def level_read(self):
+    def get_level(self):
         cmd = 'level\r\n'
         rc, rstr = self.send_cmd(cmd)
         # print("level->", rstr)
         return rstr
     
-    # def send_cmd(self, cmd):
-    #     self.ser.write(cmd.encode())
-    #     response = self.ser.read_until(b'\r\n\r\n').decode()  # Read until double CRLF
-    #     return 0, response send_command
-
-    def color_read(self):
+    def set_level(self, value):
+        cmd = self.set_level_cmd(value)
+        return self.send_cmd(cmd)
+    
+    def set_level_cmd(self, value):
+        return 'level '+str(value)+'\r\n'
+    
+  
+    def get_color(self):
         cmd = 'color\r\n'
         rc, rstr = self.send_command(cmd)
         # print("color->", rstr)
         return rstr
-
 
     def set_red(self):
         cmd = 'set red\r\n'
@@ -75,11 +81,17 @@ class Switch2450(switch.Switch):
         rc, rstr = self.send_cmd(cmd)
         return rstr
     
-    
-   
-    
+    # def set_th_light(self):
+    #     cmd = "level"
 
-
-  
-
-
+    def set_run(self):
+        cmd = 'run\r\n'
+        rc, rstr = self.send_blinkcommand(cmd)
+        # print(f"run command output:\n{rstr}")
+        return rstr
+ 
+    def set_stop(self):
+        cmd = 'stop\r\n'
+        rc, rstr = self.send_blinkcommand(cmd)
+        # print(f"stop command output:\n{rstr}")
+        return rstr

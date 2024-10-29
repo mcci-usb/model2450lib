@@ -1,6 +1,6 @@
 ##############################################################################
 # 
-# Module: switch.py
+# Module: model.py
 #
 # Description:
 #     API to send commands 
@@ -15,11 +15,11 @@
 #       Module created
 ##############################################################################
 
-from model2450lib import serialswitch
+from model2450lib import serialmodel
 
-class Switch(serialswitch.SerialDev):
+class Model(serialmodel.SerialDev):
     def __init__(self, cport, baud):
-        self.sport = serialswitch.SerialDev(cport, baud)
+        self.sport = serialmodel.SerialDev(cport, baud)
     
     def connect(self):
         return self.sport.open()
@@ -33,7 +33,6 @@ class Switch(serialswitch.SerialDev):
     
     def send_cmd(self, cmd):
         # self.clear_buffer()  # Clear buffer before sending command
-        # print(cmd)
         res = self.sport.write(cmd)
         if res > 0:
             res, rstr = self.sport.read()
@@ -41,6 +40,11 @@ class Switch(serialswitch.SerialDev):
             rstr = "Comm Error\n"
         return res, rstr
     
+    def send_blinkcommand(self, cmd):
+        re = self.sport.write(cmd)
+        lines = self.sport.read_multiple_lines()
+        return re, "\n".join(lines)
+
     def send_command(self, cmd):
         # self.write(cmd.encode('utf-8') + b'\r\n')
         # self.sport.write(cmd.encode('utf-8') + b'\r\n')

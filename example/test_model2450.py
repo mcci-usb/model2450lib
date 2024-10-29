@@ -5,64 +5,40 @@
 # import switch2450
 
 import time
-from model2450lib import searchswitch
-from model2450lib import switch2450
+from model2450lib import searchmodel
+from model2450lib import model2450
 # found a list of available switches.
 # using the port number open the switch.
-dev_list = searchswitch.get_switches()
-# print(dev_list)
+dev_list = searchmodel.get_models()
+print(dev_list)
 
-sw1 = switch2450.Switch2450('COM3')
+sw1 = model2450.Model2450('COM4')
 # print("switch 2450 connected:", sw1)
 # Connect the USB Switch
 sw1.connect()
 print("Connected switch 2450:")
 
 
-# sw1.get_version()
+time.sleep(1)
+sRun = sw1.set_run()
+print("run blank frames....:")
 
-# # sw1.get_version_rd()
+time.sleep(10)
+rStop = sw1.set_stop()
+print("stop blank frames....:")
 
-# sw1.read_sn()
-
-# sw1.level_read()
-
-# sw1.get_read()
-
-# sw1.color_read()
-# # sw1.color_read()
-
-# print("First call to color_read:")
-# result = sw1.color_read()
-
-for _ in range(30):
-    sw1.color_read()
-
-    sw1.level_read()
-    
-    sw1.get_read()
-    
-
-
-
-
-
-
-# sw1.color_read()
-
-# sw1.level_read()
-
-# sw1.get_read()
-
-# sw1.color_read()
-
-# sw1.read_level_RGB()
-
-# # sw1.get_read()
-
-# # sw1.read_level()
-
-# # sw1.get_color()
-# sw1.get_color()
-# # # print
-# response = sw1.get_color()
+# time.sleep(1)
+# ser = sw1.read_sn()  # READ SERIAL NUMBER
+# print(ser)
+# time.sleep(1)
+# ver = sw1.get_version()  # VERSION F:H
+# print(ver)
+# time.sleep(1)
+# gRead = sw1.get_read()  # READ
+# print(gRead)
+# time.sleep(1)
+# cRead = sw1.get_color()   # COLOR Values
+# print(cRead)
+# time.sleep(1)
+# lRead = sw1.get_level()   # LEVEL
+# print(lRead)
