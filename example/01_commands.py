@@ -13,7 +13,7 @@ dev_list = searchmodel.get_models()
 print(dev_list)
 
 # Replace 'COMX' with the appropriate COM port for Model2450 
-sw1 = model2450.Model2450('COM10')
+sw1 = model2450.Model2450('COM6')
 # print("switch 2450 connected:", sw1)
 # Connect the USB Switch
 sw1.connect()

@@ -8,10 +8,10 @@
 #     Released under the MCCI Corporation.
 #
 # Author:
-#     Vinay N, MCCI Corporation August 2024
+#     Vinay N, MCCI Corporation May 2025
 #
 # Revision history:
-#    V1.0.0 Wed Aug 2024 12:05:00   Vinay N
+#    V1.0.1 Wed May 2025 12:05:00   Vinay N
 #       Module created
 ##############################################################################
 import serial
@@ -20,6 +20,8 @@ import time
 import sys
 import usb.util
 from usb.backend import libusb1
+# from packetutils import read_packet_from_serial, decode_packet
+from .packetutils import read_packet_from_serial, decode_packet
 
 
 def version():
@@ -49,50 +51,43 @@ def filter_port():
 
 def check_status(myport):
     try:
-        # Attempt to open the serial port
         ser = serial.Serial(myport, baudrate=115200, 
                             bytesize=serial.EIGHTBITS,
                             parity=serial.PARITY_NONE, timeout=1, 
                             stopbits=serial.STOPBITS_ONE)
         time.sleep(1)
 
-        # Send command to check version
-        version_cmd = 'version\r\n'
-        ser.write(version_cmd.encode())
+        # Send version command and try to decode the response
+        ser.write(b'version\r\n')
+        time.sleep(0.1)
+        raw_packet = read_packet_from_serial(ser)
 
-        # Read the initial response for the version
-        response = ser.readline().decode('utf-8')
-        
-        # Wait for the complete response
-        start_time = time.time()
-        while (time.time() - start_time) < 2:
-            line = ser.readline().decode('utf-8')
-            response += line
+        if raw_packet:
+            try:
+                decoded = decode_packet(raw_packet)
+                payload_str = bytes(decoded["payload"]).decode('ascii', errors='ignore')
+                if '3:1' in payload_str or '8:1' in payload_str or '9:1' in payload_str:
+                    ser.close()
+                    return '2450'
+            except Exception as e:
+                print(f"Packet decoding failed: {e}")
 
-        # Check if version is '3:1'
-        if '3:1' in response:
-            ser.close()
-            return '2450'
+        # If version didn't return valid result, try status
+        ser.write(b'status\r\n')
+        time.sleep(0.1)
+        raw_packet = read_packet_from_serial(ser)
 
-        # Send command to check status
-        status_cmd = 'status\r\n'
-        ser.write(status_cmd.encode())
-
-        # Read the initial response for the status
-        response = ser.readline().decode('utf-8')
-        
-        # Wait for the complete response
-        start_time = time.time()
-        while (time.time() - start_time) < 2:
-            line = ser.readline().decode('utf-8')
-            response += line
+        if raw_packet:
+            try:
+                decoded = decode_packet(raw_packet)
+                payload_str = bytes(decoded["payload"]).decode('ascii', errors='ignore')
+                if 'Brightness And Color Kit' in payload_str:
+                    ser.close()
+                    return '2450'
+            except Exception as e:
+                print(f"Packet decoding failed: {e}")
 
         ser.close()
-
-        # Check if status contains 'Brightness And Color Kit'
-        if 'Brightness And Color Kit' in response:
-            return '2450'
-        
         return None
 
     except serial.SerialException as e:
@@ -102,6 +97,7 @@ def check_status(myport):
     except Exception as e:
         print(f"Unexpected error: {e}")
         return None
+
 
 def search_models():
     port_name = filter_port()

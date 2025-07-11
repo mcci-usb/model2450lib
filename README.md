@@ -91,5 +91,6 @@ sw1.get_version()
 
 ## Release History
 
+- v1.0.2 adding decoding packetaizaton
 - v1.0.1 update examples
 - v1.0.0 initial release
