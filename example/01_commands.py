@@ -13,7 +13,7 @@ dev_list = searchmodel.get_models()
 print(dev_list)
 
 # Replace 'COMX' with the appropriate COM port for Model2450 
-sw1 = model2450.Model2450('COM10')
+sw1 = model2450.Model2450('COM6')
 # print("switch 2450 connected:", sw1)
 # Connect the USB Switch
 sw1.connect()
@@ -25,6 +25,26 @@ print(sn)
 time.sleep(1)
 gread = sw1.get_read() # cmd for read the ambient light sensor
 print(gread)
+
+time.sleep(1)
+gread = sw1.get_read() # cmd for read the ambient light sensor
+print(gread)
+
+time.sleep(1)
+gread = sw1.get_read() # cmd for read the ambient light sensor
+print(gread)
+
+time.sleep(1)
+gcolor = sw1.get_color() # display the color reading
+print(gcolor)
+
+time.sleep(1)
+gcolor = sw1.get_color() # display the color reading
+print(gcolor)
+
+time.sleep(1)
+gcolor = sw1.get_color() # display the color reading
+print(gcolor)
 
 time.sleep(1)
 glevel = sw1.get_level() # cmd for read the light level for detecting blank frames
