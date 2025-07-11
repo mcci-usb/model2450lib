@@ -90,7 +90,7 @@ sw1.read_sn()
 sw1.get_version()
 
 ## Release History
-
+- v2.0.0 Adding Packetazation Format decoding
 - v1.0.2 adding decoding packetaizaton
 - v1.0.1 update examples
 - v1.0.0 initial release
