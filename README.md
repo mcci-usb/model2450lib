@@ -1,10 +1,12 @@
 # model2450lib
 
-This is a Python library to control MCCI Model2450 Brightness And Color Kit.
+Python library to control the MCCI Model 2450 Brightness And Color Kit (BACK).
 
-## Install Python3.7 (64-bit) package
+Provides APIs for device discovery, serial communication, sensor data acquisition,color calibration, streaming, and blank frame detection.
 
-install python package from [python.org](https://www.python.org/ftp/python/3.7.8/python-3.7.8-amd64.exe)
+## Install Python3.14 (64-bit) package
+
+install python package from [python.org](https://www.python.org/ftp/python/3.14.3/python-3.14.3-amd64.exe)
 
 ## Install pip package
 
@@ -20,7 +22,23 @@ python -m pip install --upgrade pip
 Development environment
 
 * OS - Windows 10 and 11 64 bit
-* Python - 3.7.8
+* Python - 3.14.3
+* pyserial - 3.5
+
+<strong>On Linux:</strong>
+
+Development environment
+
+* Ubuntu OS - 24.04
+* Python - 3.14.3
+* pyserial - 3.5
+
+<strong>On Macos:</strong>
+
+Development environment
+
+* Mac OS Montery - 12.7.6
+* Python - 3.14.3
 * pyserial - 3.5
 
 ```shell
@@ -38,11 +56,11 @@ pip install pyserial
 setup, enter the command
 
 ```bash
-python setup.py install
+pip install .
 ```
 
 Please navigate to dist/ directory and you will find the files .egg file.
-Example: `model2450lib-1.0.0-py3.7.egg`
+Example: `model2450lib-2.1.0-py3.7.egg`
 
 ## How to use the package
 
@@ -65,31 +83,85 @@ Replace 'COM3' with the appropriate COM port for Model2450
 ```
 sw1 = model2450.Model2450('COM3')
 
-### Connect the USB Model
+#### Connect the USB Model
 
 sw1.connect()
 
-### cmd for Read color
+#### Read Color Sensor
 
+- Retrieve RGB color values from the BH1749 color sensor.
+
+```
 sw1.get_color()
+```
 
-### cmd for Read level
+#### Read Light Level
 
+- Get the configured blank frame detection threshold.
+
+```
 sw1.get_level()
+```
 
-### cmd Read
+#### Read Ambient Light
 
+- Fetch the device serial number stored in EEPROM.
+
+```
 sw1.get_read()
+```
 
-### cmd for sn (serial number)
+#### Get Firmware & Hardware Version
 
-sw1.read_sn()
+- Displays firmware and hardware version (Format F:H)
 
-### cmd for get Version
+```
 
 sw1.get_version()
+```
 
-## Release History
+#### Set Blank Frame Level
+
+```
+# Example (120)
+sw1.set_level(120) 
+```
+
+#### Calibrate red
+
+- This command calibrates the red color.
+
+```
+sw1.set_red()
+```
+
+#### Calibrate Green
+
+- This command calibrates the green color.
+
+```
+sw1.set_green()
+```
+
+#### Calibrate Blue
+
+- This command calibrates the blue color
+
+```
+sw1.set_blue()
+```
+
+#### Read Serial Number
+
+- Read Serial number.
+
+```
+sw1.read_sn()
+```
+
+## Release History.
+
+- v2.1.0 Adding Headers
 - v2.0.0 Adding Packetazation Format decoding
 - v1.0.2 adding decoding packetaizaton
 - v1.0.1 update examples

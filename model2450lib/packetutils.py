@@ -1,25 +1,64 @@
-# packetutils.py
+# -*- coding: utf-8 -*-
 ##############################################################################
-# 
+#
 # Module: packetutils.py
 #
 # Description:
-#     this is decoding and encoding the commands when command is enable
-#     under packetaization format.
+#     Packet encoding and decoding utilities for
+#     Model 2450 communication protocol.
 #
-#     Released under the MCCI Corporation.
+#     Provides helper APIs to read packetized
+#     serial frames, decode protocol headers,
+#     and extract payload data from packet
+#     structures.
 #
 # Author:
-#     Vinay N, MCCI Corporation May 2025
+#     Vinay N, MCCI Corporation Feb 16 2026
 #
 # Revision history:
-#    V1.0.1 Wed May 2025 12:05:00   Vinay N
-#       Module created
+#     v2.1.0  Wed Feb 16 2026 12:05:00  Vinay N
+#         Module created
+#
 ##############################################################################
 import time
 
 def decode_packet(packet_bytes):
-    # print("packet_bytes:", packet_bytes)
+    """
+    Decode protocol packet structure.
+
+    Extracts header fields and payload
+    information from raw packet bytes.
+
+    Packet Format:
+        Byte 0:
+            bit7 → Start bit
+            bit6 → End bit
+            bit5 → Reserved
+            bit0–4 → Command
+
+        Byte 1:
+            bit5 - 7 → Sequence
+            bit0 - 4 → Length
+
+    Args:
+        packet_bytes: Raw packet byte array.
+
+    Returns:
+        dict:
+            Decoded packet fields including:
+                start_bit
+                end_bit
+                reserved
+                command
+                sequence
+                length
+                payload
+
+    Raises:
+        ValueError:
+            If packet length is invalid
+            or header is incomplete.
+    """
     
     if len(packet_bytes) < 2:
         raise ValueError("Packet too short to decode header.")
@@ -51,6 +90,24 @@ def decode_packet(packet_bytes):
     }
 
 def read_packet_from_serial(ser):
+    """
+    Read single packet frame from serial port.
+
+    Reads header first to determine packet
+    length, then fetches remaining payload.
+
+    Args:
+        ser: Active serial connection object.
+
+    Returns:
+        bytes | None:
+            Complete packet frame if received,
+            otherwise None.
+
+    Raises:
+        IOError:
+            If serial read fails.
+    """
     header = ser.read(2)
     if len(header) < 2:
         return None
@@ -69,6 +126,24 @@ def read_packet_from_serial(ser):
     return header + payload
 
 def read_block_frames(ser):
+    """
+    Read block packet frame.
+
+    Reads packet assuming full payload
+    arrives in a single block transfer.
+
+    Args:
+        ser: Active serial connection object.
+
+    Returns:
+        bytes | None:
+            Complete packet frame if valid,
+            otherwise None.
+
+    Raises:
+        IOError:
+            If serial read fails.
+    """
     header = ser.read(2)
     # print("......header:", header)
     if len(header) < 2:

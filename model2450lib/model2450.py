@@ -1,26 +1,59 @@
-
+# -*- coding: utf-8 -*-
 ##############################################################################
-# 
+#
 # Module: model2450.py
 #
 # Description:
-#     Top level API to manage Model 2450
+#     Top-level API to manage Model 2450
+#     BACK (Brightness And Color Kit).
 #
-#     Released under the MCCI Corporation.
+#     Provides high-level command wrappers
+#     for device control, configuration,
+#     streaming, and operational modes.
 #
 # Author:
-#     Vinay N, MCCI Corporation May 2025
+#     Vinay N, MCCI Corporation Feb 16 2026
 #
 # Revision history:
-#    V1.0.1 Wed May 2025 12:05:00   Vinay N
-#       Module created
+#     v2.1.0  Wed Feb 16 2026 12:05:00  Vinay N
+#         Module created
+#
 ##############################################################################
-from model2450lib.serialmodel import SerialDevice
-from model2450lib.packetutils import decode_packet, read_packet_from_serial, read_block_frames
+# Built-in imports
 import time
 
+# Own modules
+from model2450lib.serialmodel import SerialDevice
+from model2450lib.packetutils import decode_packet
+from model2450lib.packetutils import read_packet_from_serial
+from model2450lib.packetutils import read_block_frames
+
 class Model2450(SerialDevice):
+    """
+    Model 2450 BACK — Brightness And Color Kit
+
+    Hardware Components:
+        • OPT4001 Ambient Light Sensor
+        • BH1749 Color Sensor
+
+    This device supports ambient light measurement,
+    RGB color sensing, blank frame detection,
+    calibration storage, streaming telemetry,
+    and EEPROM tag operations.
+    """
     def __init__(self, port):
+        """
+        Initialize Model2450 interface.
+
+        Args:
+            port: Serial COM port name.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
         super().__init__(port)
         self.r_data = []
         self.g_data = []
@@ -29,37 +62,195 @@ class Model2450(SerialDevice):
         self.time_data = []
         self.keep_running = True
 
-    def read_sn(self): 
+    def read_sn(self):
+        """
+        Read device serial number.
+
+        Sends SN command to retrieve the
+        unique serial number stored in EEPROM.
+
+        Args:
+            None
+
+        Returns:
+            str:
+                Serial number string.
+
+        Raises:
+            RuntimeError:
+                If device communication fails.
+        """
         return self.send_cmd('sn\r\n')
 
     def get_version(self):
+        """
+        Get firmware and hardware version.
+
+        Version format:
+            F:H
+            F → Firmware version
+            H → Hardware version
+
+        Args:
+            None
+
+        Returns:
+            str:
+                Version information string.
+
+        Raises:
+            RuntimeError:
+                If command execution fails.
+        """
         return self.send_cmd('version\r\n')
 
     def get_color(self):
+        """
+        Read RGB color sensor values.
+
+        Retrieves color readings from
+        BH1749 color sensor.
+
+        Args:
+            None
+
+        Returns:
+            str:
+                RGB measurement data.
+
+        Raises:
+            RuntimeError:
+                If sensor read fails.
+        """
         return self.send_cmd('color\r\n')
 
     def get_read(self):
+        """
+        Read ambient light sensor value.
+
+        Retrieves lux data from the
+        OPT4001 ambient light sensor.
+
+        Args:
+            None
+
+        Returns:
+            str:
+                Ambient light measurement.
+
+        Raises:
+            RuntimeError:
+                If sensor read fails.
+        """
         return self.send_cmd('read\r\n')
 
     def get_level(self):
+        """
+        Get blank frame detection level.
+
+        Reads configured light threshold
+        used for black frame detection.
+
+        Args:
+            None
+
+        Returns:
+            str:
+                Current detection level.
+
+        Raises:
+            RuntimeError:
+                If read fails.
+        """
         return self.send_cmd('level\r\n')
     
     def set_red(self):
+        """
+        Calibrate red channel.
+
+        Stores calibration reference
+        for red color.
+
+        Note:
+            Place sensor over red display
+            region before executing.
+
+        Returns:
+            str:
+                Calibration response.
+        """
         return self.send_cmd('set red\r\n')
     
     def set_blue(self):
+        """
+        Calibrate blue channel.
+
+        Stores calibration reference
+        for blue color.
+
+        Note:
+            Place sensor over blue display
+            region before executing.
+
+        Returns:
+            str:
+                Calibration response.
+        """
         return self.send_cmd('set blue\r\n')
     
     def set_green(self):
+        """
+        Calibrate green channel.
+
+        Stores calibration reference
+        for green color.
+
+        Note:
+            Place sensor over green display
+            region before executing.
+
+        Returns:
+            str:
+                Calibration response.
+        """
         return self.send_cmd('set green\r\n')
     
     def set_run(self):
+        """
+        Start blank frame detection.
+
+        Device begins scanning
+        for black frames.
+
+        Returns:
+            str:
+                Run mode response.
+        """
         return self.send_text_command('run\r\n')
     
     def set_stop(self):
+        """
+        Stop blank frame detection.
+
+        Stops scanning and prints
+        detection results.
+
+        Returns:
+            str:
+                Stop response output.
+        """
         return self.send_text_command('stop\r\n')
 
     def do_reset(self):
+        """
+        Perform bootloader reset.
+
+        Resets device into firmware
+        update mode.
+
+        Returns:
+            None
+        """
         try:
             self.send_command('reset -b\r\n')
             time.sleep(0.1)  # Give time for device to reset
@@ -68,6 +259,15 @@ class Model2450(SerialDevice):
             print(f"Ignoring expected error during reset: {e}")
             
     def reset_mode(self):
+        """
+        Perform device reset.
+
+        Reboots device for firmware
+        or configuration updates.
+
+        Returns:
+            None
+        """
         try:
             self.send_command('reset\r\n')
             time.sleep(0.1)  # Give time for device to reset
@@ -76,12 +276,41 @@ class Model2450(SerialDevice):
             print(f"Ignoring expected error during reset: {e}")
 
     def set_level(self, value):
+        """
+        Set blank frame detection level.
+
+        Configures light threshold used
+        to detect blank frames.
+
+        Args:
+            value:
+                Detection level value.
+
+        Returns:
+            str:
+                Device acknowledgement.
+
+        Raises:
+            ValueError:
+                If value is invalid.
+        """
         cmd = f'level {value}\r\n'
         return self.send_cmd(cmd)
     
     def get_stream3(self, callback=None):
         """
-        Continuously stream data from the device and call the callback with each piece of data.
+        Start dual sensor streaming.
+
+        Streams ambient light and
+        color sensor data.
+
+        Args:
+            callback:
+                Optional handler function
+                to process streamed data.
+
+        Returns:
+            None
         """
         self.send_stream_cmd("stream 3\r\n")  # or whatever command starts the stream
 
@@ -104,7 +333,18 @@ class Model2450(SerialDevice):
   
     def run_blank_frame_sequence(self, duration=10):
         """
-        Sends 'run' command to start blank frames, and automatically sends 'stop' after a specified duration.
+        Execute blank frame detection sequence.
+
+        Runs detection for specified duration
+        and counts blank frames.
+
+        Args:
+            duration:
+                Detection runtime (seconds).
+
+        Returns:
+            int:
+                Blank frame count.
         """
         self.ser.write(b"run\r\n")  # Use self.ser instead of ser
 
@@ -148,7 +388,10 @@ class Model2450(SerialDevice):
 
     def stop_blank_frame_sequence(self):
         """
-        Sends 'stop' command to stop the blank frame sequence.
+        Stop blank frame sequence.
+
+        Returns:
+            None
         """
         self.ser.write(b"stop\r\n")  # Use self.ser instead of ser
         print("Sent: stop")
