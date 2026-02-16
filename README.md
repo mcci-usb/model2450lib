@@ -85,7 +85,11 @@ sw1 = model2450.Model2450('COM3')
 
 #### Connect the USB Model
 
+- Conect the model 2450 device
+
+```
 sw1.connect()
+```
 
 #### Read Color Sensor
 
