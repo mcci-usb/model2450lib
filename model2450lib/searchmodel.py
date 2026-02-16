@@ -1,37 +1,90 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
-# 
+#
 # Module: searchmodel.py
 #
 # Description:
-#     API to show list of available MCCI Model 2450 BACK (Brightness and Color Kit)
+#     API to scan and list available MCCI Model 2450
+#     BACK (Brightness and Color Kit) devices.
 #
-#     Released under the MCCI Corporation.
+#     Provides utilities to detect connected devices,
+#     filter supported USB ports, and validate device
+#     identity using protocol commands.
 #
 # Author:
-#     Vinay N, MCCI Corporation May 2025
+#     Vinay N, MCCI Corporation Feb 16 2026
 #
 # Revision history:
-#    V1.0.1 Wed May 2025 12:05:00   Vinay N
-#       Module created
+#     v2.1.0  Wed Feb 16 2026 12:05:00  Vinay N
+#         Module created
+#
 ##############################################################################
+# Built-in imports
+import sys
+import time
+
+# Lib imports
 import serial
 import serial.tools.list_ports
-import time
-import sys
 import usb.util
 from usb.backend import libusb1
-# from packetutils import read_packet_from_serial, decode_packet
-from .packetutils import read_packet_from_serial, decode_packet
 
+# Own modules
+from .packetutils import read_packet_from_serial
+from .packetutils import decode_packet
 
 def version():
-    return "Model2450 v1.0.0"
+    """
+    Get library version information.
+
+    Args:
+        None
+
+    Returns:
+        str:
+            Library version string.
+
+    Raises:
+        None
+    """
+    return "Model2450 2.1.0"
 
 def get_models():
+    """
+    Retrieve list of detected Model 2450 devices.
+
+    Args:
+        None
+
+    Returns:
+        dict:
+            Dictionary containing detected model
+            device details.
+
+    Raises:
+        None
+    """
     devList = search_models()
     return devList
 
 def get_avail_ports():
+    """
+    Get all available COM ports.
+
+    Scans system serial interfaces and
+    returns port hardware details.
+
+    Args:
+        None
+
+    Returns:
+        list:
+            List of tuples containing
+            (HWID, Port, Description).
+
+    Raises:
+        None
+    """
     comlist = serial.tools.list_ports.comports()
     port_name = []
     for port, desc, hwid in sorted(comlist):
@@ -39,6 +92,22 @@ def get_avail_ports():
     return port_name
 
 def filter_port():
+    """
+    Filter supported USB ports.
+
+    Identifies ports matching Model 2450
+    USB VID/PID pattern.
+
+    Args:
+        None
+
+    Returns:
+        list:
+            Filtered COM port list.
+
+    Raises:
+        None
+    """
     usb_hwid_str = ["USB VID:PID=045E:0646"]
     comlist = serial.tools.list_ports.comports()
     port_name = []
@@ -50,6 +119,24 @@ def filter_port():
     return port_name
 
 def check_status(myport):
+    """
+    Validate device identity on a port.
+
+    Sends protocol commands to confirm whether
+    connected device is Model 2450 BACK kit.
+
+    Args:
+        myport: Serial COM port name.
+
+    Returns:
+        str | None:
+            Returns model number if detected,
+            otherwise None.
+
+    Raises:
+        serial.SerialException:
+            If serial communication fails.
+    """
     try:
         ser = serial.Serial(myport, baudrate=115200, 
                             bytesize=serial.EIGHTBITS,
@@ -100,6 +187,30 @@ def check_status(myport):
 
 
 def search_models():
+    """
+    Scan system for available Model 2450 devices.
+
+    Filters supported ports and validates each
+    device using protocol status checks.
+
+    Args:
+        None
+
+    Returns:
+        dict:
+            Dictionary containing detected
+            model and port mapping.
+
+            Example:
+            {
+                "models": [
+                    {"port": "COM3", "model": "2450"}
+                ]
+            }
+    Raises:
+        None
+    """
+    
     port_name = filter_port()
     rev_list = []
     dev_list = []
